@@ -1,0 +1,7 @@
+﻿<div ng-controller="Limbo.Umbraco.Signatur.Timestamp.Controller as vm">
+    <div ng-if="!vm.timestamp">N/A</div>
+    <div ng-if="vm.timestamp">
+        {{vm.timestamp.date | date: 'yyyy-MM-dd HH:mm'}}
+        <small>({{vm.timestamp.comment}})</small>
+    </div>
+</div>

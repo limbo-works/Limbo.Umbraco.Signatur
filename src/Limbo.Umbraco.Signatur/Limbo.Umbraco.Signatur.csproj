@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <LangVersion>12.0</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <StaticWebAssetBasePath>App_Plugins/$(AssemblyName)</StaticWebAssetBasePath>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VersionPrefix>10.0.0-alpha000001</VersionPrefix>
+    <VersionSuffix Condition="'$(Configuration)'=='Debug'">build$([System.DateTime]::UtcNow.ToString(`yyyyMMddHHmm`))</VersionSuffix>
+    <Company>Limbo</Company>
+    <Authors>Anders Bjerner</Authors>
+    <Copyright>Copyright © $([System.DateTime]::UtcNow.ToString(`yyyy`))</Copyright>
+    <Title>Limbo Borger.dk</Title>
+    <Description>Umbraco integration for Signatur RSS job feeds.</Description>
+  </PropertyGroup>
+
+  <!-- Information for the NuGet package -->
+  <PropertyGroup>
+    <PackageTags>Skybrud, Umbraco, Borger.dk, selvbetjening, web service, artikel</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://packages.limbo.works/limbo.umbraco.signatur/v10/</PackageProjectUrl>
+    <PackageIcon>Limbo.png</PackageIcon>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/limbo-works/Limbo.Umbraco.Signatur</RepositoryUrl>
+  </PropertyGroup>
+
+  <!-- Include NuGet dependencies -->
+  <ItemGroup>
+    <PackageReference Include="Limbo.Integrations.Signatur" Version="1.0.4-build202401111454" />
+    <PackageReference Include="Skybrud.Essentials" Version="1.1.54" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="[10.0.0,12.999)" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[10.0.0,12.999)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[10.0.0,12.999)" />
+  </ItemGroup>
+
+  <!-- Include backoffice assets -->
+  <ItemGroup>
+    <Content Remove="wwwroot\**\*" />
+    <!--<Content Remove="compilerconfig.json" />-->
+    <Content Include="wwwroot\**\*.css" />
+    <Content Include="wwwroot\**\*.html" />
+    <Content Include="wwwroot\**\*.js" />
+    <Content Include="wwwroot\Lang\*.xml" />
+    <Content Include="wwwroot\BackOffice\Icons\*.svg" />
+    <None Include="wwwroot\**\*.less" />
+    <!--<None Include="compilerconfig.json" />-->
+  </ItemGroup>
+
+  <!-- Include package icon for NuGet -->
+  <ItemGroup>
+    <Content Include="../build/Limbo.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- Generate XML documentation -->
+  <PropertyGroup>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+
+</Project>
