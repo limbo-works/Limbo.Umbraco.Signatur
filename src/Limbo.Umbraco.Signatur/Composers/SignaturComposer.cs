@@ -1,7 +1,7 @@
 ﻿using System;
 using Limbo.Integrations.Signatur;
+using Limbo.Umbraco.Signatur.Models.Settings;
 using Limbo.Umbraco.Signatur.Services;
-using Limbo.Umbraco.Signatur.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Skybrud.Essentials.Strings.Extensions;

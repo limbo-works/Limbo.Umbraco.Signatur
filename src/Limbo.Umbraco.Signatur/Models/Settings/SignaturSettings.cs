@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Limbo.Umbraco.Signatur.Settings;
+namespace Limbo.Umbraco.Signatur.Models.Settings;
 
 public class SignaturSettings {
 

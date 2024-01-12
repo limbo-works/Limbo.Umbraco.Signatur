@@ -4,7 +4,7 @@ using System.ServiceModel.Syndication;
 using Limbo.Integrations.Signatur;
 using Limbo.Umbraco.Signatur.Constants;
 using Limbo.Umbraco.Signatur.Extensions;
-using Limbo.Umbraco.Signatur.Settings;
+using Limbo.Umbraco.Signatur.Models.Settings;
 using Microsoft.Extensions.Options;
 using Skybrud.Essentials.Common;
 using Skybrud.Essentials.Exceptions;
@@ -16,14 +16,14 @@ namespace Limbo.Umbraco.Signatur.Services;
 
 public class SignaturJobsService {
 
+    private readonly SignaturSettings _settings;
     private readonly IContentService _contentService;
     private readonly ISignaturFeedParser _signaturFeedParser;
-    private readonly SignaturSettings _settings;
 
-    public SignaturJobsService(IContentService contentService, ISignaturFeedParser signaturFeedParser, IOptions<SignaturSettings> settings) {
+    public SignaturJobsService(IOptions<SignaturSettings> settings, IContentService contentService, ISignaturFeedParser signaturFeedParser) {
+        _settings = settings.Value;
         _contentService = contentService;
         _signaturFeedParser = signaturFeedParser;
-        _settings = settings.Value;
     }
 
     public void Import(SignaturFeedSettings feed) {
