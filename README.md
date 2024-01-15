@@ -37,7 +37,7 @@
 
 **Umbraco 10+**  
 
-Version 1 of this package supports Umbraco version 10, 11, and 12. The package is only available via [**NuGet**](https://www.nuget.org/packages/Limbo.Umbraco.Signatur).
+Version 10 of this package supports Umbraco version 10, 11, and 12. The package is only available via [**NuGet**](https://www.nuget.org/packages/Limbo.Umbraco.Signatur).
 
 To install the package, you can use either the .NET CLI:
 
