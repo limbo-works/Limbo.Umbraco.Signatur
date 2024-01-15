@@ -42,7 +42,7 @@ public class SignaturJobDataValueConverter : PropertyValueConverterBase {
     }
 
     public override Type GetPropertyValueType(IPublishedPropertyType propertyType) {
-        return _signaturFeedParser.ItemType;
+        return _signaturModelFactory.GetJobDataValueType(propertyType);
     }
 
     public override PropertyCacheLevel GetPropertyCacheLevel(IPublishedPropertyType propertyType) {
