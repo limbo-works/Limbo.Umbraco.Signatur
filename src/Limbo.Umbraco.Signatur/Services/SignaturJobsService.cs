@@ -207,7 +207,7 @@ public class SignaturJobsService {
                     dataProperty = property;
                     break;
 
-                case SignaturTimestampEditor.EditorAlias:
+                case SignaturLastUpdatedEditor.EditorAlias:
                     lastUpdatedProperty = property;
                     break;
 
