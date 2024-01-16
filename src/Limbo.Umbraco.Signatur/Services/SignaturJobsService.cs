@@ -23,12 +23,14 @@ public class SignaturJobsService {
 
     private readonly SignaturSettings _settings;
     private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly IContentTypeService _contentTypeService;
     private readonly IContentService _contentService;
     private readonly ISignaturFeedParser _signaturFeedParser;
 
-    public SignaturJobsService(IOptions<SignaturSettings> settings, IWebHostEnvironment webHostEnvironment, IContentService contentService, ISignaturFeedParser signaturFeedParser) {
+    public SignaturJobsService(IOptions<SignaturSettings> settings, IWebHostEnvironment webHostEnvironment, IContentTypeService contentTypeService, IContentService contentService, ISignaturFeedParser signaturFeedParser) {
         _settings = settings.Value;
         _webHostEnvironment = webHostEnvironment;
+        _contentTypeService = contentTypeService;
         _contentService = contentService;
         _signaturFeedParser = signaturFeedParser;
     }
@@ -52,9 +54,87 @@ public class SignaturJobsService {
             task1.AppendToMessage($"Found content node with name '{parent.Name}'...").Completed();
         }
 
+        #region Get content type
+
+        ImportTask task11 = job.AddTask("Getting content type...").Start();
+
+        IContentType? contentType = _contentTypeService.Get(feed.ContentTypeAlias);
+
+        if (contentType is null) {
+            task11.AppendToMessage("Content type not found...").Failed();
+            return job;
+        }
+
+        IPropertyType? idProperty = null;
+        IPropertyType? dataProperty = null;
+        IPropertyType? lastUpdatedProperty = null;
+        IPropertyType? titleProperty = null;
+
+        foreach (IPropertyType propertyType in contentType.PropertyTypes) {
+
+            switch (propertyType.PropertyEditorAlias) {
+
+                case SignaturJobIdEditor.EditorAlias:
+                    idProperty = propertyType;
+                    break;
+
+                case SignaturJobDataEditor.EditorAlias:
+                    dataProperty = propertyType;
+                    break;
+
+                case SignaturLastUpdatedEditor.EditorAlias:
+                    lastUpdatedProperty = propertyType;
+                    break;
+            }
+
+            switch (propertyType.Alias) {
+
+                case "title":
+                case "headerTitle":
+                case "heroTitle":
+                case "introTitle":
+                    titleProperty = propertyType;
+                    break;
+
+            }
+
+        }
+
+        if (idProperty == null) {
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobIdEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            return job;
+        }
+
+        task11.AppendToMessage($"Found Signatur job ID property with alias '{idProperty.Alias}'...");
+
+        if (dataProperty == null) {
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobDataEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            return job;
+        }
+
+        task11.AppendToMessage($"Found Signatur job data property with alias '{dataProperty.Alias}'...");
+
+        if (lastUpdatedProperty == null) {
+            task11.AppendToMessage("Signatur last updated property not found. Skipping as not mandatory...");
+        } else {
+            task11.AppendToMessage($"Found Signatur last updated property with alias '{lastUpdatedProperty.Alias}'...");
+        }
+
+        if (titleProperty == null) {
+            task11.AppendToMessage("Title property not found. Skipping as not mandatory...");
+        } else {
+            task11.AppendToMessage($"Found title property with alias '{titleProperty.Alias}'...");
+        }
+
+        SignaturImportJobsSettings settings = new(feed, parent, contentType, idProperty, dataProperty, lastUpdatedProperty, titleProperty);
+
+        task11.Completed();
+
+        #endregion
+
         #region Get existing content/jobs
 
-        ImportTask task2 = job.AddTask("Getting erxisting jobs from content service...").Start();
+        ImportTask task2 = job.AddTask("Getting existing jobs from content service...").Start();
 
         Dictionary<int, IContent> existing = new();
 
@@ -105,7 +185,7 @@ public class SignaturJobsService {
         try {
 
             foreach (ISignaturItem item in rssFeed.Items) {
-                AddOrUpdate(item, parent, feed, task4, existing);
+                AddOrUpdate(item, settings, task4, existing);
             }
 
             task4.Completed();
@@ -145,7 +225,7 @@ public class SignaturJobsService {
 
     }
 
-    protected virtual void AddOrUpdate(ISignaturItem item, IContent parent, SignaturFeedSettings feed, ImportTask parentTask, Dictionary<int, IContent> existing) {
+    protected virtual void AddOrUpdate(ISignaturItem item, SignaturImportJobsSettings settings, ImportTask parentTask, Dictionary<int, IContent> existing) {
 
         ImportTask task = parentTask.AddTask($"Import job item with name '{item.Title}' and ID '{item.WebAdId}'...").Start();
 
@@ -155,7 +235,7 @@ public class SignaturJobsService {
 
             // If the content doesn't already exist, we create in
             if (!existing.TryGetValue(item.WebAdId, out IContent? content)) {
-                content = _contentService.Create(item.Title, parent, feed.ContentTypeAlias, _settings.ImportUserId);
+                content = _contentService.Create(item.Title, settings.Parent, settings.ContentType.Alias, _settings.ImportUserId);
                 isNew = true;
                 task.AppendToMessage("Job item not found in Umbraco. Creating new content item...");
             } else {
@@ -163,7 +243,7 @@ public class SignaturJobsService {
             }
 
             // Update the Umbraco properties based on the job item
-            bool modified = UpdateProperties(item, content, task, content.Id == 0);
+            bool modified = UpdateProperties(item, content, task, settings, content.Id == 0);
 
             // Save and published the content item if we detecthed any changes
             if (modified) {
@@ -189,74 +269,65 @@ public class SignaturJobsService {
 
     }
 
-    protected virtual bool UpdateProperties(ISignaturItem item, IContent content, ImportTask task, bool isNew) {
-
-        IProperty? idProperty = null;
-        IProperty? dataProperty = null;
-        IProperty? lastUpdatedProperty = null;
-
-        foreach (IProperty property in content.Properties) {
-
-            switch (property.PropertyType.PropertyEditorAlias) {
-
-                case SignaturJobIdEditor.EditorAlias:
-                    idProperty = property;
-                    break;
-
-                case SignaturJobDataEditor.EditorAlias:
-                    dataProperty = property;
-                    break;
-
-                case SignaturLastUpdatedEditor.EditorAlias:
-                    lastUpdatedProperty = property;
-                    break;
-
-            }
-
-        }
-
-        if (idProperty is null) throw new BjernerSaysNoException($"Required property with property editor '{SignaturJobIdEditor.EditorAlias}' not found for content type '{content.ContentType.Alias}'.");
-        if (dataProperty is null) throw new BjernerSaysNoException($"Required property with property editor '{SignaturJobDataEditor.EditorAlias}' not found for content type '{content.ContentType.Alias}'.");
+    /// <summary>
+    /// Updates the properties of a job to be added or updated.
+    /// </summary>
+    /// <param name="item">An item representing the job item in the Signatur RSS feed.</param>
+    /// <param name="content">The <see cref="IContent"/> representing the job in Umbraco.</param>
+    /// <param name="task">The parent task.</param>
+    /// <param name="settings">The settings for this run of the import.</param>
+    /// <param name="isNew">Whether <paramref name="content"/> is new - aka the first time the job is being added</param>
+    /// <returns><see langword="true"/> if any properties were modified; otherwise, <see langword="false"/>.</returns>
+    protected virtual bool UpdateProperties(ISignaturItem item, IContent content, ImportTask task, SignaturImportJobsSettings settings, bool isNew) {
 
         bool modified = false;
 
         string? oldTitle = content.Name;
-        string newTitle = item.Title;
+        string newTitle = $"{item.Title} ({item.WebAdId})";
 
         // Did the title change?
         if (oldTitle != newTitle) {
-            // TODO: look for parentheses in the title as they can make it look like the title has changed
             content.Name = newTitle;
             modified = true;
         }
 
         // If the content item hasn't been created yet, we should make sure to set the job ID
         if (content.Id == 0) {
-            content.SetValue(idProperty.Alias, item.WebAdId);
+            content.SetValue(settings.IdProperty.Alias, item.WebAdId);
             modified = true;
         }
 
         // Has the data changed?
-        string? oldData = isNew ? null : content.GetValue<string>(dataProperty.Alias);
+        string? oldData = isNew ? null : content.GetValue<string>(settings.DataProperty.Alias);
 
         string newData = ToSource(item);
-        SetValueIfModified(content, dataProperty.Alias, oldData, newData, ref modified);
+        SetValueIfModified(content, settings.DataProperty.Alias, oldData, newData, ref modified);
 
-        if (lastUpdatedProperty is not null) {
+        if (settings.LastUpdatedProperty is not null) {
             if (isNew) {
-                content.SetValue(lastUpdatedProperty.Alias, $"_{EssentialsTime.UtcNow.Iso8601}");
+                content.SetValue(settings.LastUpdatedProperty.Alias, $"_{EssentialsTime.UtcNow.Iso8601}");
             } else {
-                string? value = content.GetValue<string>(lastUpdatedProperty.Alias);
+                string? value = content.GetValue<string>(settings.LastUpdatedProperty.Alias);
                 if (string.IsNullOrWhiteSpace(value)) {
                     modified = true;
                 }
-                content.SetValue(lastUpdatedProperty.Alias, $"_{EssentialsTime.UtcNow.Iso8601}");
+                content.SetValue(settings.LastUpdatedProperty.Alias, $"_{EssentialsTime.UtcNow.Iso8601}");
             }
+        }
+
+        if (settings.TitleProperty is not null) {
+            oldTitle = content.GetValue<string>(settings.TitleProperty.Alias);
+            newTitle = item.Title;
+            SetValueIfModified(content, settings.TitleProperty, oldTitle, newTitle, ref modified);
         }
 
         // Return whether the content item was modified
         return modified || content.Id == 0;
 
+    }
+
+    protected void SetValueIfModified<T>(IContent content, IPropertyType property, T? oldValue, T? newValue, ref bool modified) {
+        SetValueIfModified(content, property.Alias, oldValue, newValue, ref modified);
     }
 
     protected void SetValueIfModified<T>(IContent content, string propertyAlias, T? oldValue, T? newValue, ref bool modified) {
