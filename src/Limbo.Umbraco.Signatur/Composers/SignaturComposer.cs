@@ -20,6 +20,7 @@ public class SignaturComposer : IComposer {
         builder.Services.AddSingleton<SignaturJobsService>();
         builder.Services.AddSingleton<ISignaturFeedParser, SignaturFeedParser>();
         builder.Services.AddSingleton<SignaturModelFactory>();
+        builder.Services.AddSingleton<SignaturJobDataPropertyIndexValueFactory>();
         builder.Services.AddOptions<SignaturSettings>().Configure<IConfiguration>(ConfigureSignatur);
         builder.Services.AddHostedService<SignaturRecurringTask>();
         builder.ManifestFilters().Append<SignaturManifestFilter>();

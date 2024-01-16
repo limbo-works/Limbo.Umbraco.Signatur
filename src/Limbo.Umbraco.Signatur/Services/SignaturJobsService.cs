@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.ServiceModel.Syndication;
 using System.Text;
+using System.Text.RegularExpressions;
 using Limbo.Integrations.Signatur;
+using Limbo.Umbraco.Signatur.Extensions;
 using Limbo.Umbraco.Signatur.Models.Import;
 using Limbo.Umbraco.Signatur.Models.Settings;
 using Limbo.Umbraco.Signatur.PropertyEditors;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Skybrud.Essentials.Common;
 using Skybrud.Essentials.Exceptions;
+using Skybrud.Essentials.Security;
 using Skybrud.Essentials.Strings;
 using Skybrud.Essentials.Time;
 using Umbraco.Cms.Core.Extensions;
@@ -381,6 +384,31 @@ public class SignaturJobsService {
         Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         System.IO.File.AppendAllText(fullPath, JsonConvert.SerializeObject(job), Encoding.UTF8);
 
+    }
+
+    public virtual List<KeyValuePair<string, IEnumerable<object?>>> GetIndexValues(IProperty property, ISignaturItem item, string? culture, string? segment, bool published) {
+
+        List<KeyValuePair<string, IEnumerable<object?>>> list = new() {
+            { $"{property.Alias}_webAdId", item.WebAdId },
+            { $"{property.Alias}_publishDate", item.PublishDate }
+        };
+
+        if (!string.IsNullOrWhiteSpace(item.Category)) {
+            list.Add($"{property.Alias}_category", item.Category);
+            list.Add($"{property.Alias}_category_search", SecurityUtils.GetMd5Guid(item.Category.ToLowerInvariant()).ToString("N"));
+        }
+
+        list.Add($"{property.Alias}_title", item.Title);
+        list.Add($"{property.Alias}_description", StripHtml(item.Description));
+        if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value);
+        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline.Value);
+
+        return list;
+
+    }
+
+    protected string StripHtml(string html) {
+        return string.IsNullOrWhiteSpace(html) ? string.Empty : Regex.Replace(html, "<.*?>", " ");
     }
 
 }
