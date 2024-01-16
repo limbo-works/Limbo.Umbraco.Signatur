@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Skybrud.Essentials.Common;
 using Skybrud.Essentials.Exceptions;
+using Skybrud.Essentials.Strings;
 using Skybrud.Essentials.Time;
 using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
@@ -207,9 +208,29 @@ public class SignaturJobsService {
 
         try {
 
-            // TODO: Delete jobs no longer in the feed
+            task5.AppendToMessage(existing.Count == 0
+                ? "Found no jobs to delete."
+                : $"Found {existing.Count} {StringUtils.ToPlural("job", existing.Count)} to delete.");
 
-            task5.AppendToMessage("Not yet implemented :'(").Failed();
+            foreach (IContent content in existing.Values) {
+
+                ImportTask deleteTask = task5.AddTask($"Deleting content node with name '{content.Name}'...").Start();
+
+                try {
+
+                    _contentService.Delete(content, _settings.ImportUserId);
+
+                    deleteTask.Completed();
+
+                } catch (Exception ex) {
+
+                    deleteTask.Failed(ex);
+
+                }
+
+            }
+
+            task5.Completed();
 
         } catch (Exception ex) {
 
