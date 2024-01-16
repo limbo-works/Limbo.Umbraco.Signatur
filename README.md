@@ -87,10 +87,10 @@ The available configuration options are as following:
 - `ImportUserId` (int)  
 By the default, actions (save, publish and delete) made by the import will be attributed to the default super user in Umbraco (ID: `-1`). If you wish to attribute these actions to another user, you can specify it's numeric ID via this setting.
 
-- `LogResults` (bool)
+- `LogResults` (bool)  
 *Currently not used.*
 
-- `Feeds` (array)
+- `Feeds` (array)  
 An array of the feeds to be imported.
 
   - `Url` (string)  
@@ -102,13 +102,13 @@ An array of the feeds to be imported.
   - `ContentTypeAlias` (string)  
   The alias of the content type which should be used for new jobs.
 
-- `Scheduling` (object)
+- `Scheduling` (object)  
 The package adds a background task for running the import. That task may be configured through this object.
 
-  - `Delay` (duration) 
+  - `Delay` (duration)  
   An initial delay after startup the task should wait before beginning the import. Default is five minutes.
 
-  - `Interval` (duration)
+  - `Interval` (duration)  
   The interval between each time the task is running the import. Default is one hour.
 
 Durations may be specified as an integer, in which case the value is treated as minutes - or as a string using the ISO 8601 duration format such as `PT1H30M` (one and a half hour).
