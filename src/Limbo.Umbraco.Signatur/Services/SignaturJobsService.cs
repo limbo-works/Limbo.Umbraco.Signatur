@@ -145,7 +145,7 @@ public class SignaturJobsService {
 
                 if (content.ContentType.Alias != feed.ContentTypeAlias) continue;
 
-                int jobId = content.GetValue<int>("signaturJobId");
+                int jobId = content.GetValue<int>(settings.IdProperty.Alias);
                 if (jobId == 0) continue;
 
                 existing[jobId] = content;
