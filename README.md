@@ -42,13 +42,13 @@ Version 10 of this package supports Umbraco version 10, 11, and 12. The package 
 To install the package, you can use either the .NET CLI:
 
 ```
-dotnet add package Limbo.Umbraco.Signatur --version 10.0.0-alpha004
+dotnet add package Limbo.Umbraco.Signatur --version 10.0.0-alpha005
 ```
 
 or the NuGet Package Manager:
 
 ```
-Install-Package Limbo.Umbraco.Signatur -Version 10.0.0-alpha004
+Install-Package Limbo.Umbraco.Signatur -Version 10.0.0-alpha005
 ```
 
 
