@@ -1,6 +1,6 @@
 ﻿# Limbo Signatur
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v1/main/LICENSE.md)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v10/main/LICENSE.md)
 [![NuGet](https://img.shields.io/nuget/vpre/Limbo.Umbraco.Signatur.svg)](https://www.nuget.org/packages/Limbo.Umbraco.Signatur)
 [![NuGet](https://img.shields.io/nuget/dt/Limbo.Umbraco.Signatur.svg)](https://www.nuget.org/packages/Limbo.Umbraco.Signatur)
 <!--[![Umbraco Marketplace](https://img.shields.io/badge/umbraco-marketplace-%233544B1)](https://marketplace.umbraco.com/package/limbo.umbraco.signatur)-->
