@@ -16,6 +16,8 @@
     <Authors>Anders Bjerner</Authors>
     <Copyright>Copyright © $([System.DateTime]::UtcNow.ToString(`yyyy`))</Copyright>
     <Title>Limbo Signatur</Title>
+    <AssemblyTitle>Limbo Signatur</AssemblyTitle>
+    <Product>Limbo Signatur</Product>
     <Description>Umbraco integration for Signatur RSS job feeds.</Description>
   </PropertyGroup>
 
@@ -28,6 +30,14 @@
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/limbo-works/Limbo.Umbraco.Signatur</RepositoryUrl>
   </PropertyGroup>
+
+  <!-- Include additional metadata in the assembly -->
+  <ItemGroup>
+    <AssemblyMetadata Include="PackageProjectUrl" Value="https://packages.limbo.works/limbo.umbraco.signatur/" />
+    <AssemblyMetadata Include="DocumentationUrl" Value="https://packages.limbo.works/limbo.umbraco.signatur/docs/v10/" />
+    <AssemblyMetadata Include="NuGetUrl" Value="https://www.nuget.org/packages/Limbo.Umbraco.Signatur" />
+    <AssemblyMetadata Include="UmbracoMarketplaceUrl" Value="https://marketplace.umbraco.com/package/limbo.umbraco.signatur" />
+  </ItemGroup>
 
   <!-- Include NuGet dependencies -->
   <ItemGroup>
