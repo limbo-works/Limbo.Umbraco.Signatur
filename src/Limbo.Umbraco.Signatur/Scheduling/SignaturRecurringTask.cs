@@ -47,7 +47,7 @@ public class SignaturRecurringTask : RecurringHostedServiceBase {
             sb.AppendLine($"> Starting import from feed with URL '{feed.Url}'...");
 
             // Run a new import
-            ImportJob result = _signaturJobsService.Import(feed);
+            ImportJob result = _signaturJobsService.Import(feed, true);
 
             // Save the result to the disk
             if (_settings.LogResults) _signaturJobsService.WriteToLog(result);

@@ -38,6 +38,18 @@ public class ImportTask {
     [JsonProperty("items", Order = 998)]
     public List<ImportTask> Items = new();
 
+    #region Constructors
+
+    public ImportTask() { }
+
+    public ImportTask(string? name) {
+        Name = name;
+    }
+
+    #endregion
+
+    #region Member methods
+
     public ImportTask AddTask(string name) {
         ImportTask item = new() { Name = name, Parent = this };
         Items.Add(item);
@@ -51,5 +63,7 @@ public class ImportTask {
     public bool ShouldSerializeMessage() {
         return !string.IsNullOrWhiteSpace(Message);
     }
+
+    #endregion
 
 }

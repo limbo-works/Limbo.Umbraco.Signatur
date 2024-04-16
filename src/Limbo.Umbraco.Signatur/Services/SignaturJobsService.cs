@@ -39,7 +39,11 @@ public class SignaturJobsService {
         _signaturFeedParser = signaturFeedParser;
     }
 
-    public ImportJob Import(SignaturFeedSettings feed) {
+    public virtual ImportJob Import(SignaturFeedSettings feed, bool write) {
+        return Import(feed, new SignaturImportOptions(write));
+    }
+
+    public virtual ImportJob Import(SignaturFeedSettings feed, SignaturImportOptions options) {
 
         // Validate the feed
         if (string.IsNullOrWhiteSpace(feed.Url)) throw new PropertyNotSetException(nameof(feed.Url));
@@ -144,18 +148,27 @@ public class SignaturJobsService {
 
         try {
 
-            foreach (IContent content in _contentService.GetPagedChildren(parent.Id, 0, int.MaxValue, out long _)) {
+            // Get all job pages from the content cache
+            IEnumerable<IContent> children = _contentService
+                .GetPagedChildren(parent.Id, 0, int.MaxValue, out long _);
 
+            // Iterate through the
+            foreach (IContent content in children) {
+
+                // Skip the content item if the content type alias doesn't match
                 if (content.ContentType.Alias != feed.ContentTypeAlias) continue;
 
+                // Get the job ID
                 int jobId = content.GetValue<int>(settings.IdProperty.Alias);
                 if (jobId == 0) continue;
 
+                // Add the job to the dictionary
                 existing[jobId] = content;
 
             }
 
-            task2.AppendToMessage($"Found {existing.Count} jobs...").Completed();
+            // Append a bit of information to the log
+            task2.AppendToMessage($"Found {existing.Count} job pages...").Completed();
 
         } catch (Exception ex) {
 
@@ -189,12 +202,12 @@ public class SignaturJobsService {
         try {
 
             foreach (ISignaturItem item in rssFeed.Items) {
-                AddOrUpdate(item, settings, task4, existing);
+                AddOrUpdate(item, settings, options, task4, existing);
             }
 
-            task4.Completed();
-
             if (task4.Status == ImportStatus.Failed) return job;
+
+            task4.Completed();
 
         } catch (Exception ex) {
 
@@ -221,7 +234,7 @@ public class SignaturJobsService {
 
                 try {
 
-                    _contentService.Delete(content, _settings.ImportUserId);
+                    if (options.Write) _contentService.Delete(content, _settings.ImportUserId);
 
                     deleteTask.Completed();
 
@@ -249,7 +262,7 @@ public class SignaturJobsService {
 
     }
 
-    protected virtual void AddOrUpdate(ISignaturItem item, SignaturImportJobsSettings settings, ImportTask parentTask, Dictionary<int, IContent> existing) {
+    protected virtual void AddOrUpdate(ISignaturItem item, SignaturImportJobsSettings settings, SignaturImportOptions options, ImportTask parentTask, Dictionary<int, IContent> existing) {
 
         ImportTask task = parentTask.AddTask($"Import job item with name '{item.Title}' and ID '{item.WebAdId}'...").Start();
 
@@ -271,7 +284,7 @@ public class SignaturJobsService {
 
             // Save and published the content item if we detecthed any changes
             if (modified) {
-                _contentService.SaveAndPublish(content, userId: _settings.ImportUserId);
+                if (options.Write) _contentService.SaveAndPublish(content, userId: _settings.ImportUserId);
                 if (isNew) {
                     task.AppendToMessage($"Successfully created and published content item with ID '{content.Id}'...").SetAction(ImportAction.Added);
                 } else {

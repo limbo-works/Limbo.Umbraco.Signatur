@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 // ReSharper disable once InconsistentNaming
 
-namespace Limbo.Umbraco.Signatur.Models.Import; 
+namespace Limbo.Umbraco.Signatur.Models.Import;
 
 public static class ImportExtensions {
 
@@ -54,18 +54,42 @@ public static class ImportExtensions {
 
     }
 
+    /// <summary>
+    /// Sets the task status as completed. If the task has already been marked as failed, the status will not be modified.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="item">The item.</param>
+    /// <returns>The input item - useful for method chaining.</returns>
     public static T Completed<T>(this T item) where T : ImportTask {
-        return item.SetStatusWithTime(ImportStatus.Completed);
+
+        if (item.Stopwatch != null) {
+            item.Stopwatch.Stop();
+            item.Duration = item.Stopwatch.Elapsed;
+        }
+
+        if (item.Status != ImportStatus.Failed) item.Status = ImportStatus.Completed;
+
+        return item;
+
     }
 
-    public static T Completed<T>(this T item, ImportAction action) where T : ImportTask {
-        return item.SetStatusWithTime(ImportStatus.Completed).SetAction(action);
-    }
-
+    /// <summary>
+    /// Sets the status of the item to <see cref="ImportStatus.Failed"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="item">The item.</param>
+    /// <returns>The input item - useful for method chaining.</returns>
     public static T Failed<T>(this T item) where T : ImportTask {
         return Failed(item, null);
     }
 
+    /// <summary>
+    /// Sets the status of the item to <see cref="ImportStatus.Failed"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="item">The item.</param>
+    /// <param name="ex">Any exception that caused the task to fail.</param>
+    /// <returns>The input item - useful for method chaining.</returns>
     public static T Failed<T>(this T item, Exception? ex) where T : ImportTask {
 
         if (item.Stopwatch != null) {
@@ -83,6 +107,21 @@ public static class ImportExtensions {
 
     }
 
+    public static ImportTask Aborted(this ImportTask item) {
+
+        if (item.Stopwatch != null) {
+            item.Stopwatch.Stop();
+            item.Duration = item.Duration;
+        }
+
+        if (item.Status != ImportStatus.Failed) item.Status = ImportStatus.Aborted;
+
+        foreach (ImportTask child in item.Items) Aborted(child);
+
+        return item;
+
+    }
+
     public static T Aborted<T>(this T item) where T : ImportTask {
 
         if (item.Stopwatch != null) {
@@ -90,7 +129,9 @@ public static class ImportExtensions {
             item.Duration = item.Duration;
         }
 
-        item.Status = ImportStatus.Aborted;
+        if (item.Status != ImportStatus.Failed) item.Status = ImportStatus.Aborted;
+
+        foreach (ImportTask child in item.Items) Aborted(child);
 
         return item;
 
