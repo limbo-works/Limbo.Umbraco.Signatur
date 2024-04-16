@@ -1,4 +1,4 @@
-﻿namespace Limbo.Umbraco.Signatur.Constants; 
+﻿namespace Limbo.Umbraco.Signatur.Constants;
 
 public class SignaturProperties {
 
