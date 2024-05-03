@@ -266,13 +266,21 @@ public class SignaturJobsService {
 
         ImportTask task = parentTask.AddTask($"Import job item with name '{item.Title}' and ID '{item.WebAdId}'...").Start();
 
+        // Determine the node name. Umbraco doesn't support node names longer than 255 characters, and will throw an
+        // exception if the node name is longer, so we need to truncate the name. As we add the job ID to the end of
+        // the name, we also need to take this into account when truncating as we'd otherwise still end up with a
+        // node name that is too long
+        int maxLength = 255 - item.WebAdId.ToString().Length - 3;
+        string nodeName = $"{item.Title.ToString().Trim()} ({item.WebAdId})";
+        if (nodeName.Length > maxLength) nodeName = $"{nodeName[..(maxLength - 3)]} ({item.WebAdId})...";
+
         try {
 
             bool isNew = false;
 
             // If the content doesn't already exist, we create in
             if (!existing.TryGetValue(item.WebAdId, out IContent? content)) {
-                content = _contentService.Create(item.Title, settings.Parent, settings.ContentType.Alias, _settings.ImportUserId);
+                content = _contentService.Create(nodeName, settings.Parent, settings.ContentType.Alias, _settings.ImportUserId);
                 isNew = true;
                 task.AppendToMessage("Job item not found in Umbraco. Creating new content item...");
             } else {
@@ -280,7 +288,7 @@ public class SignaturJobsService {
             }
 
             // Update the Umbraco properties based on the job item
-            bool modified = UpdateProperties(item, content, task, settings, content.Id == 0);
+            bool modified = UpdateProperties(item, content, nodeName, task, settings, content.Id == 0);
 
             // Save and published the content item if we detecthed any changes
             if (modified) {
@@ -311,20 +319,20 @@ public class SignaturJobsService {
     /// </summary>
     /// <param name="item">An item representing the job item in the Signatur RSS feed.</param>
     /// <param name="content">The <see cref="IContent"/> representing the job in Umbraco.</param>
+    /// <param name="nodeName">The node name.</param>
     /// <param name="task">The parent task.</param>
     /// <param name="settings">The settings for this run of the import.</param>
     /// <param name="isNew">Whether <paramref name="content"/> is new - aka the first time the job is being added</param>
     /// <returns><see langword="true"/> if any properties were modified; otherwise, <see langword="false"/>.</returns>
-    protected virtual bool UpdateProperties(ISignaturItem item, IContent content, ImportTask task, SignaturImportJobsSettings settings, bool isNew) {
+    protected virtual bool UpdateProperties(ISignaturItem item, IContent content, string nodeName, ImportTask task, SignaturImportJobsSettings settings, bool isNew) {
 
         bool modified = false;
 
         string? oldTitle = content.Name;
-        string newTitle = $"{item.Title} ({item.WebAdId})";
 
         // Did the title change?
-        if (oldTitle != newTitle) {
-            content.Name = newTitle;
+        if (oldTitle != nodeName) {
+            content.Name = nodeName;
             modified = true;
         }
 
@@ -354,7 +362,7 @@ public class SignaturJobsService {
 
         if (settings.TitleProperty is not null) {
             oldTitle = content.GetValue<string>(settings.TitleProperty.Alias);
-            newTitle = item.Title;
+            string newTitle = item.Title.ToString().Trim();
             SetValueIfModified(content, settings.TitleProperty, oldTitle, newTitle, ref modified);
         }
 
