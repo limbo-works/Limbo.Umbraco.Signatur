@@ -4,13 +4,13 @@
 
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <StaticWebAssetBasePath>App_Plugins/$(AssemblyName)</StaticWebAssetBasePath>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>10.0.0-alpha007</VersionPrefix>
+    <VersionPrefix>13.0.0-alpha001</VersionPrefix>
     <VersionSuffix Condition="'$(Configuration)'=='Debug'">build$([System.DateTime]::UtcNow.ToString(`yyyyMMddHHmm`))</VersionSuffix>
     <Company>Limbo</Company>
     <Authors>Anders Bjerner</Authors>
@@ -42,11 +42,11 @@
   <!-- Include NuGet dependencies -->
   <ItemGroup>
     <PackageReference Include="Limbo.Integrations.Signatur" Version="1.1.1" />
-    <PackageReference Include="Skybrud.Essentials" Version="1.1.56" />
-    <PackageReference Include="Skybrud.Essentials.Umbraco" Version="10.0.0" />
-    <PackageReference Include="Umbraco.Cms.Core" Version="[10.0.0,12.999)" />
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[10.0.0,12.999)" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[10.0.0,12.999)" />
+    <PackageReference Include="Skybrud.Essentials" Version="1.1.57" />
+    <PackageReference Include="Skybrud.Essentials.Umbraco" Version="13.0.1" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="[13.0.0,13.999)" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0,13.999)" />
+    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[13.0.0,13.999)" />
   </ItemGroup>
 
   <!-- Include backoffice assets -->

@@ -13,6 +13,7 @@ public class SignaturManifestFilter : IManifestFilter {
         // Initialize a new manifest filter for this package
         PackageManifest manifest = new() {
             AllowPackageTelemetry = true,
+            PackageId = SignaturPackage.Alias,
             PackageName = SignaturPackage.Name,
             Version = SignaturPackage.InformationalVersion,
             Scripts = new [] {

@@ -1,6 +1,6 @@
 ﻿# Limbo Signatur
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v10/main/LICENSE.md)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v13/main/LICENSE.md)
 [![NuGet](https://img.shields.io/nuget/vpre/Limbo.Umbraco.Signatur.svg)](https://www.nuget.org/packages/Limbo.Umbraco.Signatur)
 [![NuGet](https://img.shields.io/nuget/dt/Limbo.Umbraco.Signatur.svg)](https://www.nuget.org/packages/Limbo.Umbraco.Signatur)
 <!--[![Umbraco Marketplace](https://img.shields.io/badge/umbraco-marketplace-%233544B1)](https://marketplace.umbraco.com/package/limbo.umbraco.signatur)-->
@@ -10,18 +10,18 @@
 <table>
   <tr>
     <td><strong>License:</strong></td>
-    <td><a href="https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v10/main/LICENSE.md"><strong>MIT License</strong></a></td>
+    <td><a href="https://github.com/limbo-works/Limbo.Umbraco.Signatur/blob/v13/main/LICENSE.md"><strong>MIT License</strong></a></td>
   </tr>
   <tr>
     <td><strong>Umbraco:</strong></td>
     <td>
-      Umbraco 10, 11 and 12
+      Umbraco 13
     </td>
   </tr>
   <tr>
     <td><strong>Target Framework:</strong></td>
     <td>
-      .NET 6
+      .NET 8
     </td>
   </tr>
 </table>
@@ -35,20 +35,20 @@
 
 ## Installation
 
-**Umbraco 10+**  
+**Umbraco 13**  
 
-Version 10 of this package supports Umbraco version 10, 11, and 12. The package is only available via [**NuGet**](https://www.nuget.org/packages/Limbo.Umbraco.Signatur).
+Version 13 of this package supports Umbraco version 13. The package is only available via [**NuGet**](https://www.nuget.org/packages/Limbo.Umbraco.Signatur).
 
 To install the package, you can use either the .NET CLI:
 
 ```
-dotnet add package Limbo.Umbraco.Signatur --version 10.0.0-alpha006
+dotnet add package Limbo.Umbraco.Signatur --version 13.0.0-alpha001
 ```
 
 or the NuGet Package Manager:
 
 ```
-Install-Package Limbo.Umbraco.Signatur -Version 10.0.0-alpha006
+Install-Package Limbo.Umbraco.Signatur -Version 13.0.0-alpha001
 ```
 
 
