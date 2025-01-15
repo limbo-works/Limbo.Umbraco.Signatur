@@ -415,8 +415,22 @@ public class SignaturJobsService {
         };
 
         if (!string.IsNullOrWhiteSpace(item.Category)) {
-            list.Add($"{property.Alias}_category", item.Category);
-            list.Add($"{property.Alias}_category_search", SecurityUtils.GetMd5Guid(item.Category.ToLowerInvariant()).ToString("N"));
+            string categoryString = "";
+            string categorySearchString = "";
+            foreach (string category in item.Category.Split(';')) {
+                string name = category.Trim();
+                string key = SecurityUtils.GetMd5Guid(name.ToLowerInvariant()).ToString("N");
+                if (categoryString != "") {
+                    categoryString += " ";
+                }
+                categoryString += name;
+                if (categorySearchString != "") {
+                    categorySearchString += " ";
+                }
+                categorySearchString += key;
+            }
+            list.Add($"{property.Alias}_category", categoryString);
+            list.Add($"{property.Alias}_category_search", categorySearchString);
         }
 
         list.Add($"{property.Alias}_title", item.Title);
