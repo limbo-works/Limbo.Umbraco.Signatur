@@ -397,7 +397,7 @@ public class SignaturJobsService {
     /// <param name="job">The job.</param>
     public virtual void WriteToLog(ImportJob job) {
 
-        string path = Path.Combine(global::Umbraco.Cms.Core.Constants.SystemDirectories.LogFiles, SignaturPackage.Alias, $"{DateTime.UtcNow:yyyyMMddHHmmss}.txt");
+        string path = Path.Combine("~/umbraco/Logs/", SignaturPackage.Alias, $"{DateTime.UtcNow:yyyyMMddHHmmss}.txt");
 
         string fullPath = _webHostEnvironment.MapPathContentRoot(path);
 
@@ -436,7 +436,7 @@ public class SignaturJobsService {
         list.Add($"{property.Alias}_title", item.Title);
         list.Add($"{property.Alias}_description", StripHtml(item.Description));
         if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value);
-        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline.Value);
+        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline);
 
         return list;
 
