@@ -436,6 +436,7 @@ public class SignaturJobsService {
         list.Add($"{property.Alias}_title", item.Title);
         list.Add($"{property.Alias}_description", StripHtml(item.Description));
         if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value);
+        if (item.ExpirationDate is null) list.Add($"{property.Alias}_expirationDate", DateTimeOffset.MaxValue);
         if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline);
 
         return list;
