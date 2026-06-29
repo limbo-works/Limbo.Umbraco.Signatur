@@ -1,0 +1,53 @@
+{
+  "$schema": "../../umbraco-package-schema.json",
+  "name": "Limbo Signatur",
+  "id": "Limbo.Umbraco.Signatur",
+  "version": "17.0.0-alpha004",
+  "extensions": [
+    {
+      "type": "propertyEditorUi",
+      "alias": "Limbo.Umbraco.Signatur.PropertyEditorUi.JobData",
+      "name": "Limbo Signatur Job Data Property Editor UI",
+      "element": "/App_Plugins/Limbo.Umbraco.Signatur/Scripts/PropertyEditors/job-data.element.js",
+      "elementName": "limbo-umbraco-signatur-job-data-property-editor",
+      "meta": {
+        "label": "Limbo Signatur Job Data",
+        "icon": "icon-limbo-signatur",
+        "group": "Limbo",
+        "propertyEditorSchemaAlias": "Limbo.Umbraco.Signatur.JobData"
+      }
+    },
+    {
+      "type": "propertyEditorUi",
+      "alias": "Limbo.Umbraco.Signatur.PropertyEditorUi.JobId",
+      "name": "Limbo Signatur Job ID Property Editor UI",
+      "element": "/App_Plugins/Limbo.Umbraco.Signatur/Scripts/PropertyEditors/job-id.element.js",
+      "elementName": "limbo-umbraco-signatur-job-id-property-editor",
+      "meta": {
+        "label": "Limbo Signatur Job ID",
+        "icon": "icon-limbo-signatur",
+        "group": "Limbo",
+        "propertyEditorSchemaAlias": "Limbo.Umbraco.Signatur.JobId"
+      }
+    },
+    {
+      "type": "propertyEditorUi",
+      "alias": "Limbo.Umbraco.Signatur.PropertyEditorUi.LastUpdated",
+      "name": "Limbo Signatur Last Updated Property Editor UI",
+      "element": "/App_Plugins/Limbo.Umbraco.Signatur/Scripts/PropertyEditors/last-updated.element.js",
+      "elementName": "limbo-umbraco-signatur-last-updated-property-editor",
+      "meta": {
+        "label": "Limbo Signatur Last Updated",
+        "icon": "icon-limbo-signatur",
+        "group": "Limbo",
+        "propertyEditorSchemaAlias": "Limbo.Umbraco.Signatur.LastUpdated"
+      }
+    },
+    {
+      "type": "icons",
+      "alias": "Limbo.Umbraco.Signatur.Icons",
+      "name": "Limbo Signatur Icons",
+      "js": "/App_Plugins/Limbo.Umbraco.Signatur/BackOffice/Icons/icons.js"
+    }
+  ]
+}

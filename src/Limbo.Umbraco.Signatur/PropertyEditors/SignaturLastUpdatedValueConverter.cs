@@ -12,11 +12,12 @@ public class SignaturLastUpdatedValueConverter : PropertyValueConverterBase {
     }
 
     public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview) {
-        return source is string str ? str[1..] : null;
+        if (source is not string str || string.IsNullOrWhiteSpace(str)) return null;
+        return str.StartsWith("_") ? str[1..] : str;
     }
 
     public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview) {
-        return inter is string str ? EssentialsTime.FromIso8601(str) : null;
+        return inter is string str && !string.IsNullOrWhiteSpace(str) ? EssentialsTime.FromIso8601(str) : null;
     }
 
     public override Type GetPropertyValueType(IPublishedPropertyType propertyType) {

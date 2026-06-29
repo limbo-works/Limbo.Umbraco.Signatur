@@ -18,7 +18,7 @@ public class SignaturJobIdValueConverter : PropertyValueConverterBase {
     public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview) {
         return inter switch {
             int integer => integer,
-            string str => str.ToInt32(),
+            string str when !string.IsNullOrWhiteSpace(str) => str.ToInt32(),
             _ => 0
         };
     }

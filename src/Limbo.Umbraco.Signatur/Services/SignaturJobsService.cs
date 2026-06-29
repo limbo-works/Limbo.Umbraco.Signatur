@@ -144,7 +144,7 @@ public class SignaturJobsService {
 
         ImportTask task2 = job.AddTask("Getting existing jobs from content service...").Start();
 
-        Dictionary<int, IContent> existing = new();
+        Dictionary<int, IContent> existing = [];
 
         try {
 
@@ -292,7 +292,7 @@ public class SignaturJobsService {
 
             // Save and published the content item if we detecthed any changes
             if (modified) {
-                if (options.Write) _contentService.SaveAndPublish(content, userId: _settings.ImportUserId);
+                if (options.Write) SaveAndPublishContent(content);
                 if (isNew) {
                     task.AppendToMessage($"Successfully created and published content item with ID '{content.Id}'...").SetAction(ImportAction.Added);
                 } else {
@@ -313,6 +313,12 @@ public class SignaturJobsService {
         }
 
     }
+
+    protected virtual void SaveAndPublishContent(IContent content) {
+        _contentService.Save(content, _settings.ImportUserId);
+        _contentService.Publish(content, [], _settings.ImportUserId);
+    }
+
 
     /// <summary>
     /// Updates the properties of a job to be added or updated.
@@ -375,13 +381,13 @@ public class SignaturJobsService {
         SetValueIfModified(content, property.Alias, oldValue, newValue, ref modified);
     }
 
-    protected void SetValueIfModified<T>(IContent content, string propertyAlias, T? oldValue, T? newValue, ref bool modified) {
+    protected virtual void SetValueIfModified<T>(IContent content, string propertyAlias, T? oldValue, T? newValue, ref bool modified) {
         if (Equals(oldValue, newValue)) return;
         content.SetValue(propertyAlias, newValue);
         modified = true;
     }
 
-    protected string ToSource(ISignaturItem item) {
+    protected virtual string ToSource(ISignaturItem item) {
 
         if (item is SignaturItem si) {
             return SyndicationUtils.ToXmlString(si.Item);
@@ -443,7 +449,7 @@ public class SignaturJobsService {
 
     }
 
-    protected string StripHtml(string html) {
+    protected virtual string StripHtml(string html) {
         return string.IsNullOrWhiteSpace(html) ? string.Empty : Regex.Replace(html, "<.*?>", " ");
     }
 

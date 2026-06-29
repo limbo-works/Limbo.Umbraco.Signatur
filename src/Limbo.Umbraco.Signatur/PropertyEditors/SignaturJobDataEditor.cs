@@ -3,7 +3,7 @@ using Umbraco.Cms.Core.PropertyEditors;
 
 namespace Limbo.Umbraco.Signatur.PropertyEditors;
 
-[DataEditor(EditorAlias, EditorName, EditorView, ValueType = ValueTypes.Json, Group = "Limbo", Icon = EditorIcon)]
+[DataEditor(EditorAlias, ValueType = ValueTypes.String)]
 public class SignaturJobDataEditor : DataEditor {
 
     private readonly SignaturJobDataPropertyIndexValueFactory _indexValueFactory;
@@ -16,7 +16,7 @@ public class SignaturJobDataEditor : DataEditor {
 
     internal const string EditorView = "/App_Plugins/Limbo.Umbraco.Signatur/Views/JobData.html";
 
-    internal const string EditorIcon = "icon-limbo-signatur color-limbo";
+    internal const string EditorIcon = "icon-limbo-signatur";
 
     #endregion
 
