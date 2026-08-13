@@ -8,7 +8,7 @@ namespace Limbo.Umbraco.Signatur.PropertyEditors;
 public class SignaturJobIdValueConverter : PropertyValueConverterBase {
 
     public override bool IsConverter(IPublishedPropertyType propertyType) {
-        return propertyType.EditorAlias == SignaturJobIdEditor.EditorAlias;
+        return propertyType.EditorAlias == SignaturJobIdPropertyEditor.EditorAlias;
     }
 
     public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview) {

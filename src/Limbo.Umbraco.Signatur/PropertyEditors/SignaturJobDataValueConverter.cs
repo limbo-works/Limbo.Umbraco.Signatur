@@ -18,7 +18,7 @@ public class SignaturJobDataValueConverter : PropertyValueConverterBase {
     }
 
     public override bool IsConverter(IPublishedPropertyType propertyType) {
-        return propertyType.EditorAlias == SignaturJobDataEditor.EditorAlias;
+        return propertyType.EditorAlias == SignaturJobDataPropertyEditor.EditorAlias;
     }
 
     public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview) {

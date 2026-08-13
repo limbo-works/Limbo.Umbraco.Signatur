@@ -3,7 +3,7 @@
 namespace Limbo.Umbraco.Signatur.PropertyEditors;
 
 [DataEditor(EditorAlias, ValueType = ValueTypes.String)]
-public class SignaturLastUpdatedEditor : DataEditor {
+public class SignaturLastUpdatedPropertyEditor : DataEditor {
 
     #region Constants
 
@@ -19,7 +19,7 @@ public class SignaturLastUpdatedEditor : DataEditor {
 
     #region Constructors
 
-    public SignaturLastUpdatedEditor(IDataValueEditorFactory dataValueEditorFactory) : base(dataValueEditorFactory) { }
+    public SignaturLastUpdatedPropertyEditor(IDataValueEditorFactory dataValueEditorFactory) : base(dataValueEditorFactory) { }
 
     #endregion
 

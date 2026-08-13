@@ -3,7 +3,7 @@
 namespace Limbo.Umbraco.Signatur.PropertyEditors;
 
 [DataEditor(EditorAlias, ValueType = ValueTypes.Integer)]
-public class SignaturJobIdEditor : DataEditor {
+public class SignaturJobIdPropertyEditor : DataEditor {
 
     #region Constants
 
@@ -19,7 +19,7 @@ public class SignaturJobIdEditor : DataEditor {
 
     #region Constructors
 
-    public SignaturJobIdEditor(IDataValueEditorFactory dataValueEditorFactory) : base(dataValueEditorFactory) { }
+    public SignaturJobIdPropertyEditor(IDataValueEditorFactory dataValueEditorFactory) : base(dataValueEditorFactory) { }
 
     #endregion
 

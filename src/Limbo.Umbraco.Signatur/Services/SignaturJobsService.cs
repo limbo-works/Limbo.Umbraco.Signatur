@@ -82,15 +82,15 @@ public class SignaturJobsService {
 
             switch (propertyType.PropertyEditorAlias) {
 
-                case SignaturJobIdEditor.EditorAlias:
+                case SignaturJobIdPropertyEditor.EditorAlias:
                     idProperty = propertyType;
                     break;
 
-                case SignaturJobDataEditor.EditorAlias:
+                case SignaturJobDataPropertyEditor.EditorAlias:
                     dataProperty = propertyType;
                     break;
 
-                case SignaturLastUpdatedEditor.EditorAlias:
+                case SignaturLastUpdatedPropertyEditor.EditorAlias:
                     lastUpdatedProperty = propertyType;
                     break;
             }
@@ -109,14 +109,14 @@ public class SignaturJobsService {
         }
 
         if (idProperty == null) {
-            task11.AppendToMessage($"Required property with property editor '{SignaturJobIdEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobIdPropertyEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
             return job;
         }
 
         task11.AppendToMessage($"Found Signatur job ID property with alias '{idProperty.Alias}'...");
 
         if (dataProperty == null) {
-            task11.AppendToMessage($"Required property with property editor '{SignaturJobDataEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobDataPropertyEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
             return job;
         }
 

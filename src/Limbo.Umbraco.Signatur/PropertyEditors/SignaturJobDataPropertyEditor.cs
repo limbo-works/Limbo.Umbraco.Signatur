@@ -4,7 +4,7 @@ using Umbraco.Cms.Core.PropertyEditors;
 namespace Limbo.Umbraco.Signatur.PropertyEditors;
 
 [DataEditor(EditorAlias, ValueType = ValueTypes.String)]
-public class SignaturJobDataEditor : DataEditor {
+public class SignaturJobDataPropertyEditor : DataEditor {
 
     private readonly SignaturJobDataPropertyIndexValueFactory _indexValueFactory;
 
@@ -22,7 +22,7 @@ public class SignaturJobDataEditor : DataEditor {
 
     #region Constructors
 
-    public SignaturJobDataEditor(IDataValueEditorFactory dataValueEditorFactory, SignaturJobDataPropertyIndexValueFactory indexValueFactory) : base(dataValueEditorFactory) {
+    public SignaturJobDataPropertyEditor(IDataValueEditorFactory dataValueEditorFactory, SignaturJobDataPropertyIndexValueFactory indexValueFactory) : base(dataValueEditorFactory) {
         _indexValueFactory = indexValueFactory;
     }
 
