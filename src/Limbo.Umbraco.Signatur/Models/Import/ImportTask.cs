@@ -4,8 +4,6 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using Skybrud.Essentials.Json.Converters.Time;
 
-#pragma warning disable 1591
-
 namespace Limbo.Umbraco.Signatur.Models.Import;
 
 public class ImportTask {
@@ -36,7 +34,7 @@ public class ImportTask {
     public string? Message { get; set; }
 
     [JsonProperty("items", Order = 998)]
-    public List<ImportTask> Items = new();
+    public List<ImportTask> Items = [];
 
     #region Constructors
 

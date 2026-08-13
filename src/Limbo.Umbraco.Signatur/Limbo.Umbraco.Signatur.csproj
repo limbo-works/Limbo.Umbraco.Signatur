@@ -4,13 +4,13 @@
 
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <StaticWebAssetBasePath>App_Plugins/$(AssemblyName)</StaticWebAssetBasePath>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VersionPrefix>13.0.0-alpha004</VersionPrefix>
+    <VersionPrefix>17.0.0-alpha000</VersionPrefix>
     <VersionSuffix Condition="'$(Configuration)'=='Debug'">build$([System.DateTime]::UtcNow.ToString(`yyyyMMddHHmm`))</VersionSuffix>
     <Company>Limbo</Company>
     <Authors>Anders Bjerner</Authors>
@@ -31,10 +31,15 @@
     <RepositoryUrl>https://github.com/limbo-works/Limbo.Umbraco.Signatur</RepositoryUrl>
   </PropertyGroup>
 
+  <!-- Ignore vulnerabilities from transient dependencies -->
+  <PropertyGroup>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+
   <!-- Include additional metadata in the assembly -->
   <ItemGroup>
     <AssemblyMetadata Include="PackageProjectUrl" Value="https://packages.limbo.works/limbo.umbraco.signatur/" />
-    <AssemblyMetadata Include="DocumentationUrl" Value="https://packages.limbo.works/limbo.umbraco.signatur/docs/v10/" />
+    <AssemblyMetadata Include="DocumentationUrl" Value="https://packages.limbo.works/limbo.umbraco.signatur/docs/v17/" />
     <AssemblyMetadata Include="NuGetUrl" Value="https://www.nuget.org/packages/Limbo.Umbraco.Signatur" />
     <AssemblyMetadata Include="UmbracoMarketplaceUrl" Value="https://marketplace.umbraco.com/package/limbo.umbraco.signatur" />
   </ItemGroup>
@@ -42,11 +47,10 @@
   <!-- Include NuGet dependencies -->
   <ItemGroup>
     <PackageReference Include="Limbo.Integrations.Signatur" Version="1.2.0" />
-    <PackageReference Include="Skybrud.Essentials" Version="1.1.57" />
-    <PackageReference Include="Skybrud.Essentials.Umbraco" Version="13.0.1" />
-    <PackageReference Include="Umbraco.Cms.Core" Version="[13.0.0,13.999)" />
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[13.0.0,13.999)" />
-    <PackageReference Include="Umbraco.Cms.Web.BackOffice" Version="[13.0.0,13.999)" />
+    <PackageReference Include="MessagePack" Version="3.1.7" />
+    <PackageReference Include="Skybrud.Essentials" Version="1.1.68" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="17.4.2" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.4.2" />
   </ItemGroup>
 
   <!-- Include backoffice assets -->
@@ -65,6 +69,7 @@
   <!-- Include package icon for NuGet -->
   <ItemGroup>
     <Content Include="../build/Limbo.png" Pack="true" PackagePath="\" />
+    <Content Include="wwwroot\umbraco-package.json" />
   </ItemGroup>
 
   <!-- Generate XML documentation -->
