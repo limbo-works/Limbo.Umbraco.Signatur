@@ -18,7 +18,7 @@ public class SignaturJobDataValueConverter : PropertyValueConverterBase {
     }
 
     public override bool IsConverter(IPublishedPropertyType propertyType) {
-        return propertyType.EditorAlias == SignaturJobDataEditor.EditorAlias;
+        return propertyType.EditorAlias == SignaturJobDataPropertyEditor.EditorAlias;
     }
 
     public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview) {
@@ -35,7 +35,7 @@ public class SignaturJobDataValueConverter : PropertyValueConverterBase {
         // Parse the syndication item into a signatur item
         ISignaturItem item = _signaturFeedParser.ParseItem(syndicationItem);
 
-        // Convert the signatur item into something else using the model factory. By default the signatur item will be
+        // Convert the signatur item into something else using the model factory. By default, the signatur item will be
         // returned as is, but this can be controlled by overriding the model factory
         return _signaturModelFactory.ConvertJobData(owner, propertyType, item);
 

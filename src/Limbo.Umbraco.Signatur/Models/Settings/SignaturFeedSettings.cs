@@ -12,7 +12,7 @@ public class SignaturFeedSettings {
 
     public SignaturFeedSettings(string url, string parentContentKey, string contentTypeAlias) {
         Url = url;
-        if (!Guid.TryParse(parentContentKey, out Guid parentContentKeyGuid)) throw new ArgumentException("Value is not a valid GUID.", nameof(parentContentKeyGuid));
+        if (!Guid.TryParse(parentContentKey, out Guid parentContentKeyGuid)) throw new ArgumentException("Value is not a valid GUID.", nameof(parentContentKey));
         ParentContentKey = parentContentKeyGuid;
         ContentTypeAlias = contentTypeAlias;
     }

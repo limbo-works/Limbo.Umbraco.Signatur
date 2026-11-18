@@ -5,7 +5,6 @@ using System.ServiceModel.Syndication;
 using System.Text;
 using System.Text.RegularExpressions;
 using Limbo.Integrations.Signatur;
-using Limbo.Umbraco.Signatur.Extensions;
 using Limbo.Umbraco.Signatur.Models.Import;
 using Limbo.Umbraco.Signatur.Models.Settings;
 using Limbo.Umbraco.Signatur.PropertyEditors;
@@ -17,8 +16,10 @@ using Skybrud.Essentials.Exceptions;
 using Skybrud.Essentials.Security;
 using Skybrud.Essentials.Strings;
 using Skybrud.Essentials.Time;
+using Skybrud.Essentials.Umbraco.Search.Indexing;
 using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
 
 namespace Limbo.Umbraco.Signatur.Services;
@@ -82,15 +83,15 @@ public class SignaturJobsService {
 
             switch (propertyType.PropertyEditorAlias) {
 
-                case SignaturJobIdEditor.EditorAlias:
+                case SignaturJobIdPropertyEditor.EditorAlias:
                     idProperty = propertyType;
                     break;
 
-                case SignaturJobDataEditor.EditorAlias:
+                case SignaturJobDataPropertyEditor.EditorAlias:
                     dataProperty = propertyType;
                     break;
 
-                case SignaturLastUpdatedEditor.EditorAlias:
+                case SignaturLastUpdatedPropertyEditor.EditorAlias:
                     lastUpdatedProperty = propertyType;
                     break;
             }
@@ -109,14 +110,14 @@ public class SignaturJobsService {
         }
 
         if (idProperty == null) {
-            task11.AppendToMessage($"Required property with property editor '{SignaturJobIdEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobIdPropertyEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
             return job;
         }
 
         task11.AppendToMessage($"Found Signatur job ID property with alias '{idProperty.Alias}'...");
 
         if (dataProperty == null) {
-            task11.AppendToMessage($"Required property with property editor '{SignaturJobDataEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
+            task11.AppendToMessage($"Required property with property editor '{SignaturJobDataPropertyEditor.EditorAlias}' not found for content type '{contentType.Alias}'.").Failed();
             return job;
         }
 
@@ -144,13 +145,13 @@ public class SignaturJobsService {
 
         ImportTask task2 = job.AddTask("Getting existing jobs from content service...").Start();
 
-        Dictionary<int, IContent> existing = new();
+        Dictionary<int, IContent> existing = [];
 
         try {
 
             // Get all job pages from the content cache
             IEnumerable<IContent> children = _contentService
-                .GetPagedChildren(parent.Id, 0, int.MaxValue, out long _);
+                .GetPagedChildren(parent.Id, 0, int.MaxValue, out long _, null, null, null);
 
             // Iterate through the
             foreach (IContent content in children) {
@@ -271,7 +272,7 @@ public class SignaturJobsService {
         // the name, we also need to take this into account when truncating as we'd otherwise still end up with a
         // node name that is too long
         int maxLength = 255 - item.WebAdId.ToString().Length - 3;
-        string nodeName = $"{item.Title.ToString().Trim()} ({item.WebAdId})";
+        string nodeName = $"{item.Title.Trim()} ({item.WebAdId})";
         if (nodeName.Length > maxLength) nodeName = $"{nodeName[..(maxLength - 3)]} ({item.WebAdId})...";
 
         try {
@@ -290,9 +291,9 @@ public class SignaturJobsService {
             // Update the Umbraco properties based on the job item
             bool modified = UpdateProperties(item, content, nodeName, task, settings, content.Id == 0);
 
-            // Save and published the content item if we detecthed any changes
+            // Save and published the content item if we detected any changes
             if (modified) {
-                if (options.Write) _contentService.SaveAndPublish(content, userId: _settings.ImportUserId);
+                if (options.Write) SaveAndPublishContent(content);
                 if (isNew) {
                     task.AppendToMessage($"Successfully created and published content item with ID '{content.Id}'...").SetAction(ImportAction.Added);
                 } else {
@@ -313,6 +314,12 @@ public class SignaturJobsService {
         }
 
     }
+
+    protected virtual void SaveAndPublishContent(IContent content) {
+        _contentService.Save(content, _settings.ImportUserId);
+        _contentService.Publish(content, [], _settings.ImportUserId);
+    }
+
 
     /// <summary>
     /// Updates the properties of a job to be added or updated.
@@ -362,7 +369,7 @@ public class SignaturJobsService {
 
         if (settings.TitleProperty is not null) {
             oldTitle = content.GetValue<string>(settings.TitleProperty.Alias);
-            string newTitle = item.Title.ToString().Trim();
+            string newTitle = item.Title.Trim();
             SetValueIfModified(content, settings.TitleProperty, oldTitle, newTitle, ref modified);
         }
 
@@ -375,13 +382,13 @@ public class SignaturJobsService {
         SetValueIfModified(content, property.Alias, oldValue, newValue, ref modified);
     }
 
-    protected void SetValueIfModified<T>(IContent content, string propertyAlias, T? oldValue, T? newValue, ref bool modified) {
+    protected virtual void SetValueIfModified<T>(IContent content, string propertyAlias, T? oldValue, T? newValue, ref bool modified) {
         if (Equals(oldValue, newValue)) return;
         content.SetValue(propertyAlias, newValue);
         modified = true;
     }
 
-    protected string ToSource(ISignaturItem item) {
+    protected virtual string ToSource(ISignaturItem item) {
 
         if (item is SignaturItem si) {
             return SyndicationUtils.ToXmlString(si.Item);
@@ -407,12 +414,12 @@ public class SignaturJobsService {
 
     }
 
-    public virtual List<KeyValuePair<string, IEnumerable<object?>>> GetIndexValues(IProperty property, ISignaturItem item, string? culture, string? segment, bool published) {
+    public virtual IEnumerable<IndexValue> GetIndexValues(IProperty property, ISignaturItem item, string? culture, string? segment, bool published) {
 
-        List<KeyValuePair<string, IEnumerable<object?>>> list = new() {
-            { $"{property.Alias}_webAdId", item.WebAdId },
-            { $"{property.Alias}_publishDate", item.PublishDate }
-        };
+        List<IndexValue> list = [];
+
+        list.Add($"{property.Alias}_webAdId", item.WebAdId, culture);
+        list.Add($"{property.Alias}_publishDate", item.PublishDate, culture);
 
         if (!string.IsNullOrWhiteSpace(item.Category)) {
             string categoryString = "";
@@ -420,30 +427,26 @@ public class SignaturJobsService {
             foreach (string category in item.Category.Split(';')) {
                 string name = category.Trim();
                 string key = SecurityUtils.GetMd5Guid(name.ToLowerInvariant()).ToString("N");
-                if (categoryString != "") {
-                    categoryString += " ";
-                }
+                if (categoryString != "") categoryString += " ";
                 categoryString += name;
-                if (categorySearchString != "") {
-                    categorySearchString += " ";
-                }
+                if (categorySearchString != "") categorySearchString += " ";
                 categorySearchString += key;
             }
-            list.Add($"{property.Alias}_category", categoryString);
-            list.Add($"{property.Alias}_category_search", categorySearchString);
+            list.Add($"{property.Alias}_category", categoryString, culture);
+            list.Add($"{property.Alias}_category_search", categorySearchString, culture);
         }
 
-        list.Add($"{property.Alias}_title", item.Title);
-        list.Add($"{property.Alias}_description", StripHtml(item.Description));
-        if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value);
-        if (item.ExpirationDate is null) list.Add($"{property.Alias}_expirationDate", DateTimeOffset.MaxValue);
-        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline);
+        list.Add($"{property.Alias}_title", item.Title, culture);
+        list.Add($"{property.Alias}_description", StripHtml(item.Description), culture);
+        if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value, culture);
+        if (item.ExpirationDate is null) list.Add($"{property.Alias}_expirationDate", DateTimeOffset.MaxValue, culture);
+        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline, culture);
 
         return list;
 
     }
 
-    protected string StripHtml(string html) {
+    protected virtual string StripHtml(string html) {
         return string.IsNullOrWhiteSpace(html) ? string.Empty : Regex.Replace(html, "<.*?>", " ");
     }
 

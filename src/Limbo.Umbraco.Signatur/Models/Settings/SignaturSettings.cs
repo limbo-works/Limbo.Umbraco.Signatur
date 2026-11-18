@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+
 namespace Limbo.Umbraco.Signatur.Models.Settings;
 
 /// <summary>
@@ -15,10 +17,10 @@ public class SignaturSettings {
     /// <summary>
     /// Gets or sets a list of RSS feeds to be imported in Umbraco.
     /// </summary>
-    public List<SignaturFeedSettings> Feeds { get; set; } = new();
+    public List<SignaturFeedSettings> Feeds { get; set; } = [];
 
     /// <summary>
-    /// gets or sets the options for scheduling (aka the import background task).
+    /// Gets or sets the options for scheduling (aka the import background task).
     /// </summary>
     public SignaturSchedulingSettings Scheduling { get; set; } = new();
 
