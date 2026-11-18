@@ -15,6 +15,8 @@ public class SignaturJobIdPropertyEditor : DataEditor {
 
     public const string EditorIcon = "icon-limbo-signatur";
 
+    public const string EditorGroup = "Limbo";
+
     public const string EditorValueType = ValueTypes.Integer;
 
     #endregion

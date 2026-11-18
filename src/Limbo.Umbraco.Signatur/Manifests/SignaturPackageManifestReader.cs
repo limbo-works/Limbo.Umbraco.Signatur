@@ -39,7 +39,7 @@ public class SignaturPackageManifestReader : IPackageManifestReader {
             Meta = new PropertyEditorUiMeta {
                 Label = SignaturJobDataPropertyEditor.EditorName,
                 Icon = SignaturJobDataPropertyEditor.EditorIcon,
-                Group = "Limbo",
+                Group = SignaturJobDataPropertyEditor.EditorGroup,
                 PropertyEditorSchemaAlias = SignaturJobDataPropertyEditor.EditorAlias
             }
         };
@@ -52,7 +52,7 @@ public class SignaturPackageManifestReader : IPackageManifestReader {
             Meta = new PropertyEditorUiMeta {
                 Label = SignaturJobIdPropertyEditor.EditorName,
                 Icon = SignaturJobIdPropertyEditor.EditorIcon,
-                Group = "Limbo",
+                Group = SignaturJobIdPropertyEditor.EditorGroup,
                 PropertyEditorSchemaAlias = SignaturJobIdPropertyEditor.EditorAlias
             }
         };
@@ -65,7 +65,7 @@ public class SignaturPackageManifestReader : IPackageManifestReader {
             Meta = new PropertyEditorUiMeta {
                 Label = SignaturLastUpdatedPropertyEditor.EditorName,
                 Icon = SignaturLastUpdatedPropertyEditor.EditorIcon,
-                Group = "Limbo",
+                Group = SignaturLastUpdatedPropertyEditor.EditorGroup,
                 PropertyEditorSchemaAlias = SignaturLastUpdatedPropertyEditor.EditorAlias
             }
         };
