@@ -10,33 +10,33 @@ template.innerHTML = `
 
 class LimboUmbracoSignaturJobIdPropertyEditor extends HTMLElement {
 
-  #value;
-  #root;
+    #value;
+    #root;
 
-  set value(value) {
-    this.#value = value;
-    this.#render();
-  }
-
-  get value() {
-    return this.#value;
-  }
-
-  connectedCallback() {
-    if (!this.#root) {
-      this.#root = this.attachShadow({ mode: "open" });
-      this.#root.appendChild(template.content.cloneNode(true));
+    set value(value) {
+        this.#value = value;
+        this.#render();
     }
-    this.#render();
-  }
 
-  #render() {
-    if (!this.#root) return;
-    const element = this.#root.getElementById("value");
-    const value = this.#value ?? "";
-    element.textContent = value === "" ? "N/A" : value;
-    element.classList.toggle("muted", value === "");
-  }
+    get value() {
+        return this.#value;
+    }
+
+    connectedCallback() {
+        if (!this.#root) {
+            this.#root = this.attachShadow({ mode: "open" });
+            this.#root.appendChild(template.content.cloneNode(true));
+        }
+        this.#render();
+    }
+
+    #render() {
+        if (!this.#root) return;
+        const element = this.#root.getElementById("value");
+        const value = this.#value ?? "";
+        element.textContent = value === "" ? "N/A" : value;
+        element.classList.toggle("muted", value === "");
+    }
 
 }
 

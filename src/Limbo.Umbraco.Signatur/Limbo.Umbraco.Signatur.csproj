@@ -49,27 +49,14 @@
   <ItemGroup>
     <PackageReference Include="Limbo.Integrations.Signatur" Version="1.2.0" />
     <PackageReference Include="Skybrud.Essentials" Version="1.2.0" />
+    <PackageReference Include="Skybrud.Essentials.Umbraco" Version="17.0.0-alpha012" />
     <PackageReference Include="Umbraco.Cms.Core" Version="[17.4.2,17.999)" />
     <PackageReference Include="Umbraco.Cms.Web.Website" Version="[17.4.2,17.999)" />
-  </ItemGroup>
-
-  <!-- Include backoffice assets -->
-  <ItemGroup>
-    <Content Remove="wwwroot\**\*" />
-    <!--<Content Remove="compilerconfig.json" />-->
-    <Content Include="wwwroot\**\*.css" />
-    <Content Include="wwwroot\**\*.html" />
-    <Content Include="wwwroot\**\*.js" />
-    <Content Include="wwwroot\Lang\*.xml" />
-    <Content Include="wwwroot\BackOffice\Icons\*.svg" />
-    <None Include="wwwroot\**\*.less" />
-    <!--<None Include="compilerconfig.json" />-->
   </ItemGroup>
 
   <!-- Include package icon for NuGet -->
   <ItemGroup>
     <Content Include="../build/Limbo.png" Pack="true" PackagePath="\" />
-    <Content Include="wwwroot\umbraco-package.json" />
   </ItemGroup>
 
   <!-- Generate XML documentation -->

@@ -2,18 +2,20 @@
 
 namespace Limbo.Umbraco.Signatur.PropertyEditors;
 
-[DataEditor(EditorAlias, ValueType = ValueTypes.Integer)]
+[DataEditor(EditorAlias, ValueType = EditorValueType)]
 public class SignaturJobIdPropertyEditor : DataEditor {
 
     #region Constants
 
-    internal const string EditorAlias = "Limbo.Umbraco.Signatur.JobId";
+    public const string EditorAlias = "Limbo.Umbraco.Signatur.JobId";
 
-    internal const string EditorName = "Limbo Signatur Job ID";
+    public const string EditorUiAlias = "Limbo.Umbraco.Signatur.PropertyEditorUi.JobId";
 
-    internal const string EditorView = "/App_Plugins/Limbo.Umbraco.Signatur/Views/JobId.html";
+    public const string EditorName = "Limbo Signatur Job ID";
 
-    internal const string EditorIcon = "icon-limbo-signatur";
+    public const string EditorIcon = "icon-limbo-signatur";
+
+    public const string EditorValueType = ValueTypes.Integer;
 
     #endregion
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using Limbo.Integrations.Signatur;
 using Limbo.Umbraco.Signatur.Factories;
+using Limbo.Umbraco.Signatur.Manifests;
 using Limbo.Umbraco.Signatur.Models.Settings;
 using Limbo.Umbraco.Signatur.Scheduling;
 using Limbo.Umbraco.Signatur.Services;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Skybrud.Essentials.Configuration;
 using Skybrud.Essentials.Strings.Extensions;
+using Skybrud.Essentials.Umbraco.Composing;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 
@@ -16,6 +18,8 @@ namespace Limbo.Umbraco.Signatur.Composers;
 public class SignaturComposer : IComposer {
 
     public void Compose(IUmbracoBuilder builder) {
+
+        builder.AddPackageManifestReader<SignaturPackageManifestReader>();
 
         builder.Services.AddSingleton<SignaturJobsService>();
         builder.Services.AddSingleton<ISignaturFeedParser, SignaturFeedParser>();
