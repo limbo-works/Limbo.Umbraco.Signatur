@@ -13,7 +13,7 @@ public class SignaturLastUpdatedValueConverter : PropertyValueConverterBase {
 
     public override object? ConvertSourceToIntermediate(IPublishedElement owner, IPublishedPropertyType propertyType, object? source, bool preview) {
         if (source is not string str || string.IsNullOrWhiteSpace(str)) return null;
-        return str.StartsWith("_") ? str[1..] : str;
+        return str.StartsWith('_') ? str[1..] : str;
     }
 
     public override object? ConvertIntermediateToObject(IPublishedElement owner, IPublishedPropertyType propertyType, PropertyCacheLevel referenceCacheLevel, object? inter, bool preview) {

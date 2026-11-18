@@ -7,6 +7,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <StaticWebAssetBasePath>App_Plugins/$(AssemblyName)</StaticWebAssetBasePath>
     <Nullable>enable</Nullable>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -62,7 +63,6 @@
   <!-- Generate XML documentation -->
   <PropertyGroup>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
   </PropertyGroup>
 
 </Project>
