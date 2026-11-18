@@ -150,7 +150,7 @@ public class SignaturJobsService {
 
             // Get all job pages from the content cache
             IEnumerable<IContent> children = _contentService
-                .GetPagedChildren(parent.Id, 0, int.MaxValue, out long _);
+                .GetPagedChildren(parent.Id, 0, int.MaxValue, out long _, null, null, null);
 
             // Iterate through the
             foreach (IContent content in children) {
@@ -271,7 +271,7 @@ public class SignaturJobsService {
         // the name, we also need to take this into account when truncating as we'd otherwise still end up with a
         // node name that is too long
         int maxLength = 255 - item.WebAdId.ToString().Length - 3;
-        string nodeName = $"{item.Title.ToString().Trim()} ({item.WebAdId})";
+        string nodeName = $"{item.Title.Trim()} ({item.WebAdId})";
         if (nodeName.Length > maxLength) nodeName = $"{nodeName[..(maxLength - 3)]} ({item.WebAdId})...";
 
         try {
@@ -290,7 +290,7 @@ public class SignaturJobsService {
             // Update the Umbraco properties based on the job item
             bool modified = UpdateProperties(item, content, nodeName, task, settings, content.Id == 0);
 
-            // Save and published the content item if we detecthed any changes
+            // Save and published the content item if we detected any changes
             if (modified) {
                 if (options.Write) SaveAndPublishContent(content);
                 if (isNew) {
@@ -368,7 +368,7 @@ public class SignaturJobsService {
 
         if (settings.TitleProperty is not null) {
             oldTitle = content.GetValue<string>(settings.TitleProperty.Alias);
-            string newTitle = item.Title.ToString().Trim();
+            string newTitle = item.Title.Trim();
             SetValueIfModified(content, settings.TitleProperty, oldTitle, newTitle, ref modified);
         }
 

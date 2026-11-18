@@ -6,9 +6,8 @@ using Limbo.Umbraco.Signatur.Scheduling;
 using Limbo.Umbraco.Signatur.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Skybrud.Essentials.Strings;
+using Skybrud.Essentials.Configuration;
 using Skybrud.Essentials.Strings.Extensions;
-using Skybrud.Essentials.Time.Iso8601;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
 
@@ -17,20 +16,25 @@ namespace Limbo.Umbraco.Signatur.Composers;
 public class SignaturComposer : IComposer {
 
     public void Compose(IUmbracoBuilder builder) {
+
         builder.Services.AddSingleton<SignaturJobsService>();
         builder.Services.AddSingleton<ISignaturFeedParser, SignaturFeedParser>();
         builder.Services.AddSingleton<SignaturModelFactory>();
         builder.Services.AddSingleton<SignaturJobDataPropertyIndexValueFactory>();
         builder.Services.AddOptions<SignaturSettings>().Configure<IConfiguration>(ConfigureSignatur);
-        builder.Services.AddHostedService<SignaturRecurringTask>();
+
+        if (builder.Config.GetBoolean("Limbo:Signatur:Scheduling:Enabled", true)) {
+            builder.Services.AddHostedService<SignaturRecurringTask>();
+        }
+
     }
 
     private static void ConfigureSignatur(SignaturSettings settings, IConfiguration configuration) {
 
         IConfigurationSection section = configuration.GetSection("Limbo:Signatur");
 
-        settings.ImportUserId = StringUtils.ParseInt32(section.GetSection("ImportUserId")?.Value, settings.ImportUserId);
-        settings.LogResults = StringUtils.ParseBoolean(section.GetSection("LogResults")?.Value, settings.LogResults);
+        settings.ImportUserId = section.GetInt32("ImportUserId", settings.ImportUserId);
+        settings.LogResults = section.GetBoolean("LogResults", settings.LogResults);
 
         ParseFeeds(section, settings);
         ParseScheduling(section, settings);
@@ -39,15 +43,14 @@ public class SignaturComposer : IComposer {
 
     private static void ParseFeeds(IConfiguration section, SignaturSettings settings) {
 
-        IConfigurationSection? feeds = section.GetSection("Feeds");
-        if (feeds == null) return;
+        IConfigurationSection feeds = section.GetSection("Feeds");
 
         foreach (IConfigurationSection child in feeds.GetChildren()) {
 
             // Read from properties from their respective child sections
-            string? url = child.GetSection("Url")?.Value;
-            Guid? parentContentKey = child.GetSection("ParentContentKey")?.Value.ToGuid();
-            string? contentTypeAlias = child.GetSection("ContentTypeAlias")?.Value;
+            string? url = child.GetString("Url");
+            Guid? parentContentKey = child.GetGuid("ParentContentKey");
+            string? contentTypeAlias = child.GetString("ContentTypeAlias");
 
             // Validate required properties
             if (string.IsNullOrWhiteSpace(url)) throw new Exception("Feed does not specify a URL.");
@@ -63,23 +66,11 @@ public class SignaturComposer : IComposer {
 
     private static void ParseScheduling(IConfiguration section, SignaturSettings settings) {
 
-        IConfigurationSection? scheduling = section.GetSection("Scheduling");
-        if (scheduling == null) return;
+        IConfigurationSection scheduling = section.GetSection("Scheduling");
 
-        string? delay = scheduling.GetSection("Delay")?.Value;
-        string? interval = scheduling.GetSection("Interval")?.Value;
-
-        if (int.TryParse(delay, out int delayMinutes)) {
-            settings.Scheduling.Delay = TimeSpan.FromMinutes(delayMinutes);
-        } else if (Iso8601Utils.TryParseDuration(delay, out TimeSpan delayTimeSpan)) {
-            settings.Scheduling.Delay = delayTimeSpan;
-        }
-
-        if (int.TryParse(interval, out int internalMinutes)) {
-            settings.Scheduling.Interval = TimeSpan.FromMinutes(internalMinutes);
-        } else if (Iso8601Utils.TryParseDuration(interval, out TimeSpan internalTimeSpan)) {
-            settings.Scheduling.Interval = internalTimeSpan;
-        }
+        settings.Scheduling.Enabled = scheduling.GetSection("Enabled").Value.ToBoolean(true);
+        settings.Scheduling.Delay = scheduling.GetTimeSpan("Delay", settings.Scheduling.Delay);
+        settings.Scheduling.Interval = scheduling.GetTimeSpan("Interval", settings.Scheduling.Interval);
 
     }
 
