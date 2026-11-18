@@ -38,13 +38,11 @@ public class SignaturJobDataPropertyIndexValueFactory : IPropertyIndexValueFacto
         // Parse the 'SyndicationItem' instance into a 'ISignaturItem' instance
         ISignaturItem signaturItem = _signaturFeedParser.ParseItem(syndicationItem);
 
-        // TODO: Code smells a bit here ... can we optimize?
-        foreach (var pair in _signaturJobsService.GetIndexValues(property, signaturItem, culture, segment, published)) {
-            yield return new IndexValue{
-                Culture = culture,
-                FieldName = pair.Key,
-                Values = pair.Value
-            };
+        // Delegate the rest of the work to the jobs service
+        foreach (IndexValue value in _signaturJobsService.GetIndexValues(property, signaturItem, culture, segment, published)) {
+            yield return value;
         }
+
     }
+
 }

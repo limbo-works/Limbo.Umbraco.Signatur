@@ -5,7 +5,6 @@ using System.ServiceModel.Syndication;
 using System.Text;
 using System.Text.RegularExpressions;
 using Limbo.Integrations.Signatur;
-using Limbo.Umbraco.Signatur.Extensions;
 using Limbo.Umbraco.Signatur.Models.Import;
 using Limbo.Umbraco.Signatur.Models.Settings;
 using Limbo.Umbraco.Signatur.PropertyEditors;
@@ -17,8 +16,10 @@ using Skybrud.Essentials.Exceptions;
 using Skybrud.Essentials.Security;
 using Skybrud.Essentials.Strings;
 using Skybrud.Essentials.Time;
+using Skybrud.Essentials.Umbraco.Search.Indexing;
 using Umbraco.Cms.Core.Extensions;
 using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.PropertyEditors;
 using Umbraco.Cms.Core.Services;
 
 namespace Limbo.Umbraco.Signatur.Services;
@@ -413,12 +414,12 @@ public class SignaturJobsService {
 
     }
 
-    public virtual List<KeyValuePair<string, IEnumerable<object?>>> GetIndexValues(IProperty property, ISignaturItem item, string? culture, string? segment, bool published) {
+    public virtual IEnumerable<IndexValue> GetIndexValues(IProperty property, ISignaturItem item, string? culture, string? segment, bool published) {
 
-        List<KeyValuePair<string, IEnumerable<object?>>> list = new() {
-            { $"{property.Alias}_webAdId", item.WebAdId },
-            { $"{property.Alias}_publishDate", item.PublishDate }
-        };
+        List<IndexValue> list = [];
+
+        list.Add($"{property.Alias}_webAdId", item.WebAdId, culture);
+        list.Add($"{property.Alias}_publishDate", item.PublishDate, culture);
 
         if (!string.IsNullOrWhiteSpace(item.Category)) {
             string categoryString = "";
@@ -426,24 +427,20 @@ public class SignaturJobsService {
             foreach (string category in item.Category.Split(';')) {
                 string name = category.Trim();
                 string key = SecurityUtils.GetMd5Guid(name.ToLowerInvariant()).ToString("N");
-                if (categoryString != "") {
-                    categoryString += " ";
-                }
+                if (categoryString != "") categoryString += " ";
                 categoryString += name;
-                if (categorySearchString != "") {
-                    categorySearchString += " ";
-                }
+                if (categorySearchString != "") categorySearchString += " ";
                 categorySearchString += key;
             }
-            list.Add($"{property.Alias}_category", categoryString);
-            list.Add($"{property.Alias}_category_search", categorySearchString);
+            list.Add($"{property.Alias}_category", categoryString, culture);
+            list.Add($"{property.Alias}_category_search", categorySearchString, culture);
         }
 
-        list.Add($"{property.Alias}_title", item.Title);
-        list.Add($"{property.Alias}_description", StripHtml(item.Description));
-        if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value);
-        if (item.ExpirationDate is null) list.Add($"{property.Alias}_expirationDate", DateTimeOffset.MaxValue);
-        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline);
+        list.Add($"{property.Alias}_title", item.Title, culture);
+        list.Add($"{property.Alias}_description", StripHtml(item.Description), culture);
+        if (item.ExpirationDate is not null) list.Add($"{property.Alias}_expirationDate", item.ExpirationDate.Value, culture);
+        if (item.ExpirationDate is null) list.Add($"{property.Alias}_expirationDate", DateTimeOffset.MaxValue, culture);
+        if (item.Deadline is not null) list.Add($"{property.Alias}_deadline", item.Deadline, culture);
 
         return list;
 
