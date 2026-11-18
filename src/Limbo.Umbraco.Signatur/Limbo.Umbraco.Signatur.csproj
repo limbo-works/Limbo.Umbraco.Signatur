@@ -49,8 +49,8 @@
   <ItemGroup>
     <PackageReference Include="Limbo.Integrations.Signatur" Version="1.2.0" />
     <PackageReference Include="Skybrud.Essentials" Version="1.2.0" />
-    <PackageReference Include="Umbraco.Cms.Core" Version="17.4.2" />
-    <PackageReference Include="Umbraco.Cms.Web.Website" Version="17.4.2" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="[17.4.2,17.999)" />
+    <PackageReference Include="Umbraco.Cms.Web.Website" Version="[17.4.2,17.999)" />
   </ItemGroup>
 
   <!-- Include backoffice assets -->
