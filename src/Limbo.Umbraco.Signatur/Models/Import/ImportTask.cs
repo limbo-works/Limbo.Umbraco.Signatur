@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json;
-using Skybrud.Essentials.Json.Converters.Time;
+using Skybrud.Essentials.Json.Newtonsoft.Converters.Time;
 
 namespace Limbo.Umbraco.Signatur.Models.Import;
 
